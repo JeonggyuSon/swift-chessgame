@@ -7,60 +7,30 @@
 
 import Foundation
 
-enum BoardRank: Int, CaseIterable {
-    case A, B, C, D, E, F, G, H
-}
-
-enum BoardFile: Int, CaseIterable {
-    case _1, _2, _3, _4, _5, _6, _7, _8
-}
-
-struct Position {
-    let rank: BoardRank
-    let file: BoardFile
-}
-
-extension Position {
-    enum PositionError: Error {
-        case invalidString, invalidPosition
-    }
-    
-    init(string: String) throws {
-        guard string.count == 2,
-              let rankValue = string.first?.asciiValue,
-              let fileValue = string.last?.asciiValue else {
-            throw PositionError.invalidString
-        }
-        
-        let rank = Int(rankValue - Character("A").asciiValue!)
-        let file = Int(fileValue - Character("1").asciiValue!)
-        
-        if let rank = BoardRank(rawValue: rank), let file = BoardFile(rawValue: file) {
-            self.init(rank: rank, file: file)
-        } else {
-            throw PositionError.invalidPosition
-        }
-    }
-}
-
-class Board {
+final class Board {
     var piecePosition : [[Piece?]] = Array(repeating: Array(repeating: nil,count: BoardRank.allCases.count), count: BoardFile.allCases.count)
 
     func initailizePiece() {
         piecePosition = Array(repeating: Array(repeating: nil,count: BoardRank.allCases.count), count: BoardFile.allCases.count)
         
-        let blackPieces: [BlackPiece?] = [.luke, .knight, .biship, nil, .queen, .biship, .knight, .luke]
-        piecePosition[0] = blackPieces
-        
-        for file in 0..<piecePosition[1].count {
-            piecePosition[1][file] = BlackPiece.pawn
-        }
-        
-        let whitePieces: [WhitePiece?] = [.luke, .knight, .biship, nil, .queen, .biship, .knight, .luke]
-        piecePosition[7] = whitePieces
-        
-        for file in 0..<piecePosition[6].count {
-            piecePosition[6][file] = WhitePiece.pawn
+        for rank in BoardRank.allCases {
+            var pieces: [Piece?]?
+            
+            if rank == .A {
+                let blackPieces: [BlackPiece?] = [.luke, .knight, .biship, nil, .queen, .biship, .knight, .luke]
+                pieces = blackPieces
+            } else if rank == .B {
+                pieces = Array(repeating: BlackPiece.pawn, count: BoardRank.allCases.count)
+            } else if rank == .G {
+                pieces = Array(repeating: WhitePiece.pawn, count: BoardRank.allCases.count)
+            } else if rank == .H {
+                let whitePieces: [WhitePiece?] = [.luke, .knight, .biship, nil, .queen, .biship, .knight, .luke]
+                pieces = whitePieces
+            }
+            
+            if let pieces = pieces {
+                piecePosition[rank.rawValue] = pieces
+            }
         }
     }
     
