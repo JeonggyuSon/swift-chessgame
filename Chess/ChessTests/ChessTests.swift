@@ -17,17 +17,27 @@ class ChessTests: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-
-    func testExample() throws {
+    
+    func testInitialize() throws {
         let board = Board()
         
         board.initailizePiece()
         board.display()
         board.printScore()
+    }
+
+    func testPositionParsing() throws {
+        do {
+            let positionA1 = try Position(string: "A1")
+            
+            XCTAssertTrue(positionA1.rank == .A && positionA1.file == ._1)
+        } catch {
+            XCTFail("포지션 텍스트 파싱 실패.")
+        }
         
-        let from = Position(rank: .A, file: ._1)
-        let to = Position(rank: .D, file: ._3)
-        board.movePiece(from: from, to: to)
+        let positionZ1 = try? Position(string: "Z1")
+        
+        XCTAssertTrue(positionZ1 == nil)
     }
 
     func testPerformanceExample() throws {

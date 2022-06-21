@@ -20,6 +20,29 @@ struct Position {
     let file: BoardFile
 }
 
+extension Position {
+    enum PositionError: Error {
+        case invalidString, invalidPosition
+    }
+    
+    init(string: String) throws {
+        guard string.count == 2,
+              let rankValue = string.first?.asciiValue,
+              let fileValue = string.last?.asciiValue else {
+            throw PositionError.invalidString
+        }
+        
+        let rank = Int(rankValue - Character("A").asciiValue!)
+        let file = Int(fileValue - Character("1").asciiValue!)
+        
+        if let rank = BoardRank(rawValue: rank), let file = BoardFile(rawValue: file) {
+            self.init(rank: rank, file: file)
+        } else {
+            throw PositionError.invalidPosition
+        }
+    }
+}
+
 class Board {
     var piecePosition : [[Piece?]] = Array(repeating: Array(repeating: nil,count: BoardRank.allCases.count), count: BoardFile.allCases.count)
 
