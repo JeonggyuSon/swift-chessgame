@@ -23,7 +23,12 @@ class ChessTests: XCTestCase {
         
         board.initailizePiece()
         board.display()
-        board.printScore()
+        
+        let score = board.score()
+        XCTAssertTrue(score.black == 39)
+        XCTAssertTrue(score.white == 39)
+        
+        print("white : \(score.white)\nblack : \(score.black)")
     }
 
     func testPositionParsing() throws {

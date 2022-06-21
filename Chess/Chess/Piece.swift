@@ -8,26 +8,30 @@
 import Foundation
 
 protocol Piece {
+    var color: PieceColor { get set }
+    var type: PieceType { get set }
+    
     var max: Int { get }
     var score: Int { get }
     var icon: String { get }
+    
+    func movablePositions(in board: [[Piece?]]) -> [Position]
 }
 
-enum BlackPiece: Piece {
+enum PieceColor {
+    case white, black
+}
+
+enum PieceType {
     case pawn, knight, biship, luke, queen
-    
-    var icon: String {
-        switch self {
-        case .pawn:     return "\u{265F}"
-        case .knight:   return "\u{265E}"
-        case .biship:   return "\u{265D}"
-        case .luke:     return "\u{265C}"
-        case .queen:    return "\u{265B}"
-        }
-    }
+}
+
+struct ChessPiece: Piece {
+    var color: PieceColor
+    var type: PieceType
     
     var max: Int {
-        switch self {
+        switch type {
         case .pawn:                     return 8
         case .biship, .luke, .knight:   return 2
         case .queen:                    return 1
@@ -35,42 +39,36 @@ enum BlackPiece: Piece {
     }
 
     var score: Int {
-        switch self {
+        switch type {
         case .pawn:             return 1
         case .biship, .knight:  return 3
         case .luke:             return 5
         case .queen:            return 9
         }
     }
-}
-
-enum WhitePiece: Piece {
-    case pawn, knight, biship, luke, queen
     
     var icon: String {
-        switch self {
-        case .pawn:     return "\u{2659}"
-        case .knight:   return "\u{2658}"
-        case .biship:   return "\u{2657}"
-        case .luke:     return "\u{2656}"
-        case .queen:    return "\u{2655}"
+        switch color {
+        case .white:
+            switch type {
+            case .pawn:     return "\u{2659}"
+            case .knight:   return "\u{2658}"
+            case .biship:   return "\u{2657}"
+            case .luke:     return "\u{2656}"
+            case .queen:    return "\u{2655}"
+            }
+        case .black:
+            switch type {
+            case .pawn:     return "\u{265F}"
+            case .knight:   return "\u{265E}"
+            case .biship:   return "\u{265D}"
+            case .luke:     return "\u{265C}"
+            case .queen:    return "\u{265B}"
+            }
         }
     }
     
-    var max: Int {
-        switch self {
-        case .pawn:                     return 8
-        case .biship, .luke, .knight:   return 2
-        case .queen:                    return 1
-        }
-    }
-    
-    var score: Int {
-        switch self {
-        case .pawn:             return 1
-        case .biship, .knight:  return 3
-        case .luke:             return 5
-        case .queen:            return 9
-        }
+    func movablePositions(in board: [[Piece?]]) -> [Position] {
+        return []
     }
 }

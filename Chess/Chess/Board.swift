@@ -17,14 +17,28 @@ final class Board {
             var pieces: [Piece?]?
             
             if rank == .A {
-                let blackPieces: [BlackPiece?] = [.luke, .knight, .biship, nil, .queen, .biship, .knight, .luke]
+                let blackPieces: [ChessPiece?] = [ChessPiece(color: .black, type: .luke),
+                                                  ChessPiece(color: .black, type: .knight),
+                                                  ChessPiece(color: .black, type: .biship),
+                                                  nil,
+                                                  ChessPiece(color: .black, type: .queen),
+                                                  ChessPiece(color: .black, type: .biship),
+                                                  ChessPiece(color: .black, type: .knight),
+                                                  ChessPiece(color: .black, type: .luke)]
                 pieces = blackPieces
             } else if rank == .B {
-                pieces = Array(repeating: BlackPiece.pawn, count: BoardRank.allCases.count)
+                pieces = Array(repeating: ChessPiece(color: .black, type: .pawn), count: BoardRank.allCases.count)
             } else if rank == .G {
-                pieces = Array(repeating: WhitePiece.pawn, count: BoardRank.allCases.count)
+                pieces = Array(repeating: ChessPiece(color: .white, type: .pawn), count: BoardRank.allCases.count)
             } else if rank == .H {
-                let whitePieces: [WhitePiece?] = [.luke, .knight, .biship, nil, .queen, .biship, .knight, .luke]
+                let whitePieces: [ChessPiece?] = [ChessPiece(color: .white, type: .luke),
+                                                  ChessPiece(color: .white, type: .knight),
+                                                  ChessPiece(color: .white, type: .biship),
+                                                  nil,
+                                                  ChessPiece(color: .white, type: .queen),
+                                                  ChessPiece(color: .white, type: .biship),
+                                                  ChessPiece(color: .white, type: .knight),
+                                                  ChessPiece(color: .white, type: .luke)]
                 pieces = whitePieces
             }
             
@@ -34,11 +48,19 @@ final class Board {
         }
     }
     
-    func printScore() {
-        let whiteScore = piecePosition.reduce(0, { $0 + $1.reduce(0, { $0 + (($1 as? WhitePiece)?.score ?? 0) })})
-        let blackScore = piecePosition.reduce(0, { $0 + $1.reduce(0, { $0 + (($1 as? BlackPiece)?.score ?? 0) })})
+    func score() -> (white: Int, black: Int) {
+        var whiteScore: Int = 0
+        var blackScore: Int = 0
+        for piece in piecePosition.flatMap({ $0 }) {
+            if let piece = piece {
+                switch piece.color {
+                case .white:    whiteScore += piece.score
+                case .black:    blackScore += piece.score
+                }
+            }
+        }
         
-        print("white : \(whiteScore)\nblack : \(blackScore)")
+        return (white: whiteScore, black: blackScore)
     }
     
     func display() {
