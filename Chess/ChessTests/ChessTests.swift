@@ -9,7 +9,8 @@ import XCTest
 @testable import Chess
 
 class ChessTests: XCTestCase {
-
+    private var board = Board()
+    
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -19,16 +20,10 @@ class ChessTests: XCTestCase {
     }
     
     func testInitialize() throws {
-        let board = Board()
-        
         board.initailizePiece()
         board.display()
         
-        let score = board.score()
-        XCTAssertTrue(score.black == 39)
-        XCTAssertTrue(score.white == 39)
-        
-        print("white : \(score.white)\nblack : \(score.black)")
+        print("white : \(board.whiteScore)\nblack : \(board.blackScore)")
     }
 
     func testPositionParsing() throws {
@@ -36,6 +31,10 @@ class ChessTests: XCTestCase {
             let positionA1 = try Position(string: "A1")
             
             XCTAssertTrue(positionA1.rank == .A && positionA1.file == ._1)
+            
+            let positionC4 = try Position(string: "C4")
+            
+            XCTAssertTrue(positionC4.rank == .C && positionC4.file == ._4)
         } catch {
             XCTFail("포지션 텍스트 파싱 실패.")
         }
@@ -44,12 +43,23 @@ class ChessTests: XCTestCase {
         
         XCTAssertTrue(positionZ1 == nil)
     }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+    
+    func testMovePosition() throws {
+        board.initailizePiece()
+        board.display()
+        
+        let target = Position(rank: .B, file: ._2)
+        let dest = Position(rank: .C, file: ._2)
+        let pawn = board.piece(position: target)
+        let positions = pawn?.movablePositions
+        
+        XCTAssertTrue(positions?.first == dest)
+        
+        let isMovePiece = board.movePiece(from: target, to: dest)
+        
+        XCTAssertTrue(isMovePiece)
+        
+        board.display()
+        print("white : \(board.whiteScore)\nblack : \(board.blackScore)")
     }
-
 }

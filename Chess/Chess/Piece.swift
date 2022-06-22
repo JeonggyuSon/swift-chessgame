@@ -10,12 +10,12 @@ import Foundation
 protocol Piece {
     var color: PieceColor { get set }
     var type: PieceType { get set }
+    var position: Position { get set }
     
     var max: Int { get }
     var score: Int { get }
     var icon: String { get }
-    
-    func movablePositions(in board: [[Piece?]]) -> [Position]
+    var movablePositions: [Position] { get }
 }
 
 enum PieceColor {
@@ -29,6 +29,7 @@ enum PieceType {
 struct ChessPiece: Piece {
     var color: PieceColor
     var type: PieceType
+    var position: Position
     
     var max: Int {
         switch type {
@@ -68,7 +69,33 @@ struct ChessPiece: Piece {
         }
     }
     
-    func movablePositions(in board: [[Piece?]]) -> [Position] {
+    var movablePositions: [Position] {
+        switch type {
+        case .pawn:
+            switch color {
+            case .white:
+                let nextRankRaw = position.rank.rawValue - 1
+                
+                if BoardRank.A.rawValue <= nextRankRaw, let nextRank = BoardRank(rawValue: nextRankRaw) {
+                    return [Position(rank: nextRank, file: position.file)]
+                }
+            case .black:
+                let nextRankRaw = position.rank.rawValue + 1
+                
+                if BoardRank.H.rawValue >= nextRankRaw, let nextRank = BoardRank(rawValue: nextRankRaw) {
+                    return [Position(rank: nextRank, file: position.file)]
+                }
+            }
+        case .knight:
+            break
+        case .biship:
+            break
+        case .luke:
+            break
+        case .queen:
+            break
+        }
+        
         return []
     }
 }
