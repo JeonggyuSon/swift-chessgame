@@ -7,6 +7,14 @@
 
 import Foundation
 
+enum PieceColor {
+    case white, black
+}
+
+enum PieceType {
+    case pawn, knight, bishop, luke, queen
+}
+
 protocol Piece {
     var color: PieceColor { get set }
     var type: PieceType { get set }
@@ -15,15 +23,7 @@ protocol Piece {
     var max: Int { get }
     var score: Int { get }
     var icon: String { get }
-    var movablePositions: [Position] { get }
-}
-
-enum PieceColor {
-    case white, black
-}
-
-enum PieceType {
-    case pawn, knight, biship, luke, queen
+    var rule: PieceRule { get }
 }
 
 struct ChessPiece: Piece {
@@ -34,7 +34,7 @@ struct ChessPiece: Piece {
     var max: Int {
         switch type {
         case .pawn:                     return 8
-        case .biship, .luke, .knight:   return 2
+        case .bishop, .luke, .knight:   return 2
         case .queen:                    return 1
         }
     }
@@ -42,7 +42,7 @@ struct ChessPiece: Piece {
     var score: Int {
         switch type {
         case .pawn:             return 1
-        case .biship, .knight:  return 3
+        case .bishop, .knight:  return 3
         case .luke:             return 5
         case .queen:            return 9
         }
@@ -54,7 +54,7 @@ struct ChessPiece: Piece {
             switch type {
             case .pawn:     return "\u{2659}"
             case .knight:   return "\u{2658}"
-            case .biship:   return "\u{2657}"
+            case .bishop:   return "\u{2657}"
             case .luke:     return "\u{2656}"
             case .queen:    return "\u{2655}"
             }
@@ -62,40 +62,20 @@ struct ChessPiece: Piece {
             switch type {
             case .pawn:     return "\u{265F}"
             case .knight:   return "\u{265E}"
-            case .biship:   return "\u{265D}"
+            case .bishop:   return "\u{265D}"
             case .luke:     return "\u{265C}"
             case .queen:    return "\u{265B}"
             }
         }
     }
     
-    var movablePositions: [Position] {
+    var rule: PieceRule {
         switch type {
-        case .pawn:
-            switch color {
-            case .white:
-                let nextRankRaw = position.rank.rawValue - 1
-                
-                if BoardRank.A.rawValue <= nextRankRaw, let nextRank = BoardRank(rawValue: nextRankRaw) {
-                    return [Position(rank: nextRank, file: position.file)]
-                }
-            case .black:
-                let nextRankRaw = position.rank.rawValue + 1
-                
-                if BoardRank.H.rawValue >= nextRankRaw, let nextRank = BoardRank(rawValue: nextRankRaw) {
-                    return [Position(rank: nextRank, file: position.file)]
-                }
-            }
-        case .knight:
-            break
-        case .biship:
-            break
-        case .luke:
-            break
-        case .queen:
-            break
+        case .pawn:     return PawnRule(color: color)
+        case .knight:   return KnightRule(color: color)
+        case .bishop:   return BishopRule(color: color)
+        case .luke:     return LukeRule(color: color)
+        case .queen:    return QueenRule(color: color)
         }
-        
-        return []
     }
 }

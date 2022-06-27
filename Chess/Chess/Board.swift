@@ -20,13 +20,13 @@ final class Board {
             var types: [PieceType?]?
             var color: PieceColor?
             
-            if rank == .A || rank == .H {
-                types = [.luke, .knight, .biship, nil, .queen, .biship, .knight, .luke]
-                color = rank == .A ? .black : .white
+            if rank == ._1 || rank == ._8 {
+                types = [.luke, .knight, .bishop, nil, .queen, .bishop, .knight, .luke]
+                color = rank == ._1 ? .black : .white
                 
-            } else if rank == .B || rank == .G {
+            } else if rank == ._2 || rank == ._7 {
                 types = [.pawn, .pawn, .pawn, .pawn, .pawn, .pawn, .pawn, .pawn]
-                color = rank == .B ? .black : .white
+                color = rank == ._2 ? .black : .white
             }
             
             if let types = types, let color = color {
@@ -40,7 +40,7 @@ final class Board {
         
         for (index, type) in types.enumerated() {
             if let file = BoardFile(rawValue: index), let type = type {
-                pieces[index] = ChessPiece(color: color, type: type, position: Position(rank: rank, file: file))
+                pieces[index] = ChessPiece(color: color, type: type, position: Position(file: file, rank: rank))
             }
         }
         
@@ -74,7 +74,7 @@ final class Board {
     func movePiece(from target: Position, to dest: Position) -> Bool {
         guard let targetPiece = piecePosition[target] else { return false }
         
-        let movablePositions = targetPiece.movablePositions.filter { position in
+        let movablePositions = targetPiece.rule.movablePositions(current: target).filter { position in
             let destPiece = piecePosition[position]
             
             return destPiece?.color != targetPiece.color
