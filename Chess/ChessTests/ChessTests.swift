@@ -11,14 +11,6 @@ import XCTest
 class ChessTests: XCTestCase {
     private var board = Board()
     
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-    
     func testInitialize() throws {
         board.initailizePiece()
         board.display()
@@ -47,18 +39,10 @@ class ChessTests: XCTestCase {
     func testMovablePositions() throws {
         board.initailizePiece()
         
-        let predictedLuckPositions = [Position(file: .B, rank: ._1), Position(file: .C, rank: ._1), Position(file: .D, rank: ._1),
-                                      Position(file: .E, rank: ._1), Position(file: .F, rank: ._1), Position(file: .G, rank: ._1),
-                                      Position(file: .H, rank: ._1), Position(file: .A, rank: ._2), Position(file: .A, rank: ._3),
-                                      Position(file: .A, rank: ._4), Position(file: .A, rank: ._5), Position(file: .A, rank: ._6),
-                                      Position(file: .A, rank: ._7), Position(file: .A, rank: ._8)]
-        testPiecePositions(current: Position(file: .A, rank: ._1), predicted: predictedLuckPositions)
-        
         let predictedPawnPositions = [Position(file: .C, rank: ._3)]
         testPiecePositions(current: Position(file: .C, rank: ._2), predicted: predictedPawnPositions)
-        
-        let predictedKnightPositions = [Position(file: .A, rank: ._2), Position(file: .C, rank: ._2)]
-        testPiecePositions(current: Position(file: .B, rank: ._1), predicted: predictedKnightPositions)
+        testPiecePositions(current: Position(file: .B, rank: ._1), predicted: [])
+        testPiecePositions(current: Position(file: .A, rank: ._1), predicted: [])
         
         for rank in BoardRank.allCases {
             for file in BoardFile.allCases {
@@ -66,7 +50,7 @@ class ChessTests: XCTestCase {
                 
                 if let piece = board.piece(position: position) {
                     let pieceType = "[rank: \(position.rank), file: \(position.file)] \(piece.type)"
-                    print("\(pieceType)\n\(piece.rule.movablePositions(current: position).compactMap({ "rank:\($0.rank) / file:\($0.file)" }).joined(separator: "\n") )")
+                    print("\(pieceType)\n\(board.movablePositions(target: position).compactMap({ "rank:\($0.rank) / file:\($0.file)" }).joined(separator: "\n") )")
                     print("----------------\n")
                 }
             }
@@ -74,8 +58,7 @@ class ChessTests: XCTestCase {
     }
     
     private func testPiecePositions(current position: Position, predicted positions: [Position]) {
-        let luck = board.piece(position: position)
-        let possiblePositions = luck?.rule.movablePositions(current: position) ?? []
+        let possiblePositions = board.movablePositions(target: position)
         
         XCTAssertTrue(Set(possiblePositions) == Set(positions))
     }
@@ -86,10 +69,9 @@ class ChessTests: XCTestCase {
         
         let target = Position(file: .A, rank: ._2)
         let dest = Position(file: .A, rank: ._3)
-        let pawn = board.piece(position: target)
-        let positions = pawn?.rule.movablePositions(current: target)
+        let positions = board.movablePositions(target: target)
         
-        XCTAssertTrue(positions?.first == dest)
+        XCTAssertTrue(positions.first == dest)
         
         let isMovePiece = board.movePiece(from: target, to: dest)
         
@@ -97,5 +79,19 @@ class ChessTests: XCTestCase {
         
         board.display()
         print("white : \(board.whiteScore)\nblack : \(board.blackScore)")
+    }
+    
+    func testScore() throws {
+        let pawn = ChessPiece(color: .black, type: .pawn, position: Position(file: .A, rank: ._2))
+        
+        board.addScore(piece: pawn)
+        
+        XCTAssertTrue(board.whiteScore == pawn.score)
+        
+        let knight = ChessPiece(color: .black, type: .knight, position: Position(file: .B, rank: ._1))
+        
+        board.addScore(piece: knight)
+        
+        XCTAssertTrue(board.whiteScore == (pawn.score + knight.score))
     }
 }

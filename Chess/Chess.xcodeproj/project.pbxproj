@@ -20,6 +20,8 @@
 		C2360C792860748B00E117C9 /* Piece.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2360C772860748B00E117C9 /* Piece.swift */; };
 		C2360C7B28615EA300E117C9 /* Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2360C7A28615EA300E117C9 /* Position.swift */; };
 		C2360CAD2865A68700E117C9 /* PieceRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2360CAC2865A68700E117C9 /* PieceRule.swift */; };
+		C2360CB12869840B00E117C9 /* BoardSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2360CB02869840B00E117C9 /* BoardSpace.swift */; };
+		C2360CB32869BB3900E117C9 /* BoardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2360CB22869BB3900E117C9 /* BoardViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +59,8 @@
 		C2360C772860748B00E117C9 /* Piece.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Piece.swift; sourceTree = "<group>"; };
 		C2360C7A28615EA300E117C9 /* Position.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Position.swift; sourceTree = "<group>"; };
 		C2360CAC2865A68700E117C9 /* PieceRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieceRule.swift; sourceTree = "<group>"; };
+		C2360CB02869840B00E117C9 /* BoardSpace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardSpace.swift; sourceTree = "<group>"; };
+		C2360CB22869BB3900E117C9 /* BoardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +114,8 @@
 				C2360C752860745100E117C9 /* SupportingFiles */,
 				C2360C492860744500E117C9 /* ViewController.swift */,
 				C2360C762860748B00E117C9 /* Board.swift */,
+				C2360CB02869840B00E117C9 /* BoardSpace.swift */,
+				C2360CB22869BB3900E117C9 /* BoardViewModel.swift */,
 				C2360C772860748B00E117C9 /* Piece.swift */,
 				C2360CAC2865A68700E117C9 /* PieceRule.swift */,
 				C2360C7A28615EA300E117C9 /* Position.swift */,
@@ -280,8 +286,10 @@
 			files = (
 				C2360C4A2860744500E117C9 /* ViewController.swift in Sources */,
 				C2360C462860744500E117C9 /* AppDelegate.swift in Sources */,
+				C2360CB12869840B00E117C9 /* BoardSpace.swift in Sources */,
 				C2360C7B28615EA300E117C9 /* Position.swift in Sources */,
 				C2360C792860748B00E117C9 /* Piece.swift in Sources */,
+				C2360CB32869BB3900E117C9 /* BoardViewModel.swift in Sources */,
 				C2360CAD2865A68700E117C9 /* PieceRule.swift in Sources */,
 				C2360C782860748B00E117C9 /* Board.swift in Sources */,
 				C2360C482860744500E117C9 /* SceneDelegate.swift in Sources */,

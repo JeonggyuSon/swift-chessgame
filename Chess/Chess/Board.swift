@@ -8,61 +8,47 @@
 import Foundation
 
 final class Board {
-    private var piecePosition : [[Piece?]] = Array(repeating: Array(repeating: nil,count: BoardRank.allCases.count), count: BoardFile.allCases.count)
+    private var pieceSpaces: [Position: Piece] = [:]
     
     var whiteScore: Int = 0
     var blackScore: Int = 0
 
     func initailizePiece() {
-        piecePosition = Array(repeating: Array(repeating: nil,count: BoardRank.allCases.count), count: BoardFile.allCases.count)
+        pieceSpaces = [:]
         
         for rank in BoardRank.allCases {
-            var types: [PieceType?]?
+            var types: [BoardFile: PieceType]?
             var color: PieceColor?
             
             if rank == ._1 || rank == ._8 {
-                types = [.luke, .knight, .bishop, nil, .queen, .bishop, .knight, .luke]
+                types = [.A: .luke, .B: .knight, .C: .bishop, .E: .queen, .F: .bishop, .G: .knight, .H: .luke]
                 color = rank == ._1 ? .black : .white
                 
             } else if rank == ._2 || rank == ._7 {
-                types = [.pawn, .pawn, .pawn, .pawn, .pawn, .pawn, .pawn, .pawn]
+                types = [.A: .pawn, .B: .pawn, .C: .pawn, .D: .pawn, .E: .pawn, .F: .pawn, .G: .pawn, .H: .pawn]
                 color = rank == ._2 ? .black : .white
             }
             
             if let types = types, let color = color {
-                piecePosition[rank.rawValue] = createPieces(color: color, rank: rank, for: types)
+                types.forEach({ (file, type) in
+                    let position = Position(file: file, rank: rank)
+                    pieceSpaces[position] = ChessPiece(color: color, type: type, position: position)
+                })
             }
         }
-    }
-    
-    private func createPieces(color: PieceColor, rank: BoardRank, for types: [PieceType?]) -> [ChessPiece?] {
-        var pieces: [ChessPiece?] = Array(repeating: nil, count: BoardFile.allCases.count)
-        
-        for (index, type) in types.enumerated() {
-            if let file = BoardFile(rawValue: index), let type = type {
-                pieces[index] = ChessPiece(color: color, type: type, position: Position(file: file, rank: rank))
-            }
-        }
-        
-        return pieces
     }
     
     func piece(position: Position) -> Piece? {
-        piecePosition[position]
-    }
-    
-    func reset() {
-        whiteScore = 0
-        blackScore = 0
-        initailizePiece()
+        pieceSpaces[position]
     }
     
     func display() {
-        for rank in 0..<piecePosition.count {
+        for rank in BoardRank.allCases {
             var rankString = ""
             
-            for file in 0..<piecePosition[rank].count {
-                let pieceIcon = piecePosition[rank][file]?.icon ?? "."
+            for file in BoardFile.allCases {
+                let position = Position(file: file, rank: rank)
+                let pieceIcon = pieceSpaces[position]?.icon ?? "."
                 
                 rankString += pieceIcon
             }
@@ -71,24 +57,44 @@ final class Board {
         }
     }
     
-    func movePiece(from target: Position, to dest: Position) -> Bool {
-        guard let targetPiece = piecePosition[target] else { return false }
+    func movablePositions(target: Position) -> [Position] {
+        guard let targetPiece = pieceSpaces[target] else { return [] }
         
-        let movablePositions = targetPiece.rule.movablePositions(current: target).filter { position in
-            let destPiece = piecePosition[position]
+        var positions: [[Position]] = []
+        
+        targetPiece.rule.movablePositions(current: target).forEach { positionsByDirection in
+            var filteredPositions = [Position]()
             
-            return destPiece?.color != targetPiece.color
+            for position in positionsByDirection {
+                let destPiece = pieceSpaces[position]
+                
+                if targetPiece.color == destPiece?.color {
+                    break
+                }
+                
+                filteredPositions.append(position)
+            }
+            
+            positions.append(filteredPositions)
         }
+        
+        return positions.flatMap({ $0 })
+    }
+    
+    func movePiece(from target: Position, to dest: Position) -> Bool {
+        guard let targetPiece = pieceSpaces[target] else { return false }
+        
+        let movablePositions = movablePositions(target: target)
         
         if movablePositions.contains(dest) {
             var targetPiece = targetPiece
             
             targetPiece.position = dest
-            piecePosition[target] = nil
-            piecePosition[dest] = targetPiece
+            pieceSpaces.removeValue(forKey: target)
+            pieceSpaces[dest] = targetPiece
         }
         
-        return movablePositions.isEmpty == false
+        return movablePositions.contains(dest)
     }
     
     func addScore(piece: Piece?) {
@@ -97,22 +103,10 @@ final class Board {
         }
 
         switch piece.color {
-        case .white:
+        case .black:
             whiteScore += piece.score
-        default:
+        case .white:
             blackScore += piece.score
-        }
-    }
-}
-
-extension Array where Element == [Piece?] {
-    subscript(position: Position) -> Piece? {
-        get {
-            return self[position.rank.rawValue][position.file.rawValue]
-        }
-        
-        set {
-            self[position.rank.rawValue][position.file.rawValue] = newValue
         }
     }
 }

@@ -10,7 +10,7 @@ import Foundation
 protocol PieceRule {
     var color: PieceColor { get }
     
-    func movablePositions(current: Position) -> [Position]
+    func movablePositions(current: Position) -> [[Position]]
 }
 
 extension PieceRule {
@@ -102,7 +102,7 @@ extension PieceRule {
 struct PawnRule: PieceRule {
     var color: PieceColor
     
-    func movablePositions(current: Position) -> [Position] {
+    func movablePositions(current: Position) -> [[Position]] {
         var newPosition = current
         var nextRank: BoardRank?
         
@@ -115,9 +115,9 @@ struct PawnRule: PieceRule {
         
         if let nextRank = nextRank {
             newPosition.rank = nextRank
-            return [newPosition]
+            return [[newPosition]]
         } else {
-            return []
+            return [[]]
         }
     }
 }
@@ -125,8 +125,7 @@ struct PawnRule: PieceRule {
 struct KnightRule: PieceRule {
     var color: PieceColor
     
-    func movablePositions(current: Position) -> [Position] {
-        var positions: [Position] = []
+    func movablePositions(current: Position) -> [[Position]] {
         var nextRank: BoardRank?
         
         switch color {
@@ -137,17 +136,19 @@ struct KnightRule: PieceRule {
         }
         
         if let nextRank = nextRank {
+            var positions: [[Position]] = []
+            
             if let leftFile = current.file - 1 {
-                positions.append(Position(file: leftFile, rank: nextRank))
+                positions.append([Position(file: leftFile, rank: nextRank)])
             }
             
             if let rightFile = current.file + 1 {
-                positions.append(Position(file: rightFile, rank: nextRank))
+                positions.append([Position(file: rightFile, rank: nextRank)])
             }
             
             return positions
         } else {
-            return []
+            return [[]]
         }
     }
 }
@@ -155,33 +156,33 @@ struct KnightRule: PieceRule {
 struct BishopRule: PieceRule {
     var color: PieceColor
     
-    func movablePositions(current: Position) -> [Position] {
+    func movablePositions(current: Position) -> [[Position]] {
         let leftTop = leftTopPositions(current: current)
         let rightTop = rightTopPositions(current: current)
         let leftBottom = leftBottomPositions(current: current)
         let rightBottom = rightBottomPositions(current: current)
         
-        return leftTop + rightTop + leftBottom + rightBottom
+        return [leftTop] + [rightTop] + [leftBottom] + [rightBottom]
     }
 }
 
 struct LukeRule: PieceRule {
     var color: PieceColor
     
-    func movablePositions(current: Position) -> [Position] {
+    func movablePositions(current: Position) -> [[Position]] {
         let left = leftPositions(current: current)
         let right = rightPositions(current: current)
         let top = topPositions(current: current)
         let bottom = bottomPositions(current: current)
         
-        return left + right + top + bottom
+        return [left] + [right] + [top] + [bottom]
     }
 }
 
 struct QueenRule: PieceRule {
     var color: PieceColor
     
-    func movablePositions(current: Position) -> [Position] {
+    func movablePositions(current: Position) -> [[Position]] {
         let leftTop = leftTopPositions(current: current)
         let rightTop = rightTopPositions(current: current)
         let leftBottom = leftBottomPositions(current: current)
@@ -192,6 +193,6 @@ struct QueenRule: PieceRule {
         let top = topPositions(current: current)
         let bottom = bottomPositions(current: current)
         
-        return left + right + top + bottom + leftTop + rightTop + leftBottom + rightBottom
+        return [left] + [right] + [top] + [bottom] + [leftTop] + [rightTop] + [leftBottom] + [rightBottom]
     }
 }
