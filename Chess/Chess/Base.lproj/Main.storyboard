@@ -116,6 +116,7 @@
                     <connections>
                         <outlet property="blackScore" destination="Yce-CI-WKv" id="TSr-pz-6WW"/>
                         <outlet property="board" destination="p83-YX-lbh" id="cyy-A4-Uuv"/>
+                        <outlet property="currentTurnDisplay" destination="2LZ-cO-HDP" id="UJe-VN-JXE"/>
                         <outlet property="whiteScore" destination="fvO-OP-Sl2" id="3xl-MG-pew"/>
                     </connections>
                 </viewController>

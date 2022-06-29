@@ -6,12 +6,14 @@
 //
 
 import Foundation
+import Combine
 
 final class Board {
     private var pieceSpaces: [Position: Piece] = [:]
     
-    var whiteScore: Int = 0
-    var blackScore: Int = 0
+    var turn: PieceColor = .white
+    var whiteScore = CurrentValueSubject<Int, Never>(0)
+    var blackScore = CurrentValueSubject<Int, Never>(0)
 
     func initailizePiece() {
         pieceSpaces = [:]
@@ -68,11 +70,15 @@ final class Board {
             for position in positionsByDirection {
                 let destPiece = pieceSpaces[position]
                 
-                if targetPiece.color == destPiece?.color {
+                if let destPiece = destPiece {
+                    if targetPiece.color != destPiece.color {
+                        filteredPositions.append(position)
+                    }
+                    
                     break
+                } else {
+                    filteredPositions.append(position)
                 }
-                
-                filteredPositions.append(position)
             }
             
             positions.append(filteredPositions)
@@ -88,10 +94,13 @@ final class Board {
         
         if movablePositions.contains(dest) {
             var targetPiece = targetPiece
+            let destPiece = pieceSpaces[dest]
             
             targetPiece.position = dest
             pieceSpaces.removeValue(forKey: target)
             pieceSpaces[dest] = targetPiece
+            
+            addScore(piece: destPiece)
         }
         
         return movablePositions.contains(dest)
@@ -104,9 +113,9 @@ final class Board {
 
         switch piece.color {
         case .black:
-            whiteScore += piece.score
+            whiteScore.send(whiteScore.value + piece.score)
         case .white:
-            blackScore += piece.score
+            blackScore.send(blackScore.value + piece.score)
         }
     }
 }

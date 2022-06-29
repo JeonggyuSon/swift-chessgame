@@ -6,26 +6,39 @@
 //
 
 import Foundation
-
-protocol BoardViewModel {
-    var board: Board { get set }
-    var turn: PieceColor { get set }
-    var selectedPosition: Position? { get set }
-    
-    func piece(in position: Position?) -> Piece?
-    func moveBoardSpace(position: Position) throws -> Bool
-}
+import Combine
 
 enum BoardSelectError: Error {
     case notSelectPiece
     case equalSelectedPositions
     case notPossiblePosition
+    case emptyPosition
+    case notMatchTurn
 }
 
-final class BoardViewModelImpl: BoardViewModel {
-    var board: Board = Board()
-    var turn: PieceColor = .white
+extension PieceColor {
+    func toggle() -> PieceColor {
+        self == .black ? .white : .black
+    }
+}
+
+final class BoardViewModel {
+    private var cancellables = Set<AnyCancellable>()
+    
+    var board: Board
+    var turn: CurrentValueSubject<PieceColor, Never>
     var selectedPosition: Position?
+    
+    var currentTurn: PieceColor { turn.value }
+    
+    init() {
+        board = Board()
+        turn = CurrentValueSubject<PieceColor, Never>(.white)
+        
+        turn.sink(receiveValue: { [weak self] turn in
+            self?.board.turn = turn
+        }).store(in: &cancellables)
+    }
     
     func piece(in position: Position?) -> Piece? {
         guard let position = position else {
@@ -48,8 +61,16 @@ final class BoardViewModelImpl: BoardViewModel {
                 }
             }
         } else {
-            self.selectedPosition = position
-            throw BoardSelectError.notSelectPiece
+            if let piece = board.piece(position: position) {
+                if piece.color == currentTurn {
+                    self.selectedPosition = position
+                    throw BoardSelectError.notSelectPiece
+                } else {
+                    throw BoardSelectError.notMatchTurn
+                }
+            } else {
+                throw BoardSelectError.emptyPosition
+            }
         }
     }
 }
